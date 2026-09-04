@@ -1,0 +1,397 @@
+/* Reset & Core variables */
+:root {
+    --bg-dark: #141414;
+    --card-bg: #1f1f1f;
+    --accent: #e50914; /* Cinematic Red */
+    --accent-hover: #b20710;
+    --text-color: #ffffff;
+    --text-muted: #aaaaaa;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --transition-speed: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Double-section App Container */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Watchlist Sidebar styling */
+.watchlist-sidebar {
+    width: 320px;
+    background-color: #0f0f0f;
+    border-right: 1px solid var(--border-color);
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.badge {
+    background-color: var(--accent);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.empty-message {
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 40px;
+    line-height: 1.5;
+}
+
+.watchlist-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 5px;
+}
+
+/* Scrollbar Styling for Sidebar */
+.watchlist-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.watchlist-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+.watchlist-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* Main Content Styling */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Hero Header */
+.hero-header {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 36px;
+}
+
+.brand h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.tagline {
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+/* Search Input Box */
+.search-box {
+    display: flex;
+    gap: 12px;
+    max-width: 600px;
+    margin-top: 10px;
+}
+
+#search-input {
+    flex-grow: 1;
+    background-color: #2a2a2a;
+    border: 1px solid transparent;
+    padding: 14px 20px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
+}
+
+#search-input:focus {
+    border-color: var(--accent);
+    background-color: #333333;
+}
+
+#search-btn {
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s;
+}
+
+#search-btn:hover {
+    background-color: var(--accent-hover);
+}
+
+#search-btn:active {
+    transform: scale(0.98);
+}
+
+/* Search Results Section */
+.results-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    min-height: 200px;
+}
+
+.initial-state {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: var(--text-muted);
+    font-size: 16px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Dynamic Movie Cards */
+.movie-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow var(--transition-speed);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium cinematic lift-up hover */
+.movie-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.movie-poster-wrapper {
+    position: relative;
+    padding-top: 140%; /* Cinematic aspect ratio */
+    background-color: #2a2a2a;
+    overflow: hidden;
+}
+
+.movie-poster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-speed);
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.05);
+}
+
+.movie-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.movie-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.movie-rating {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.movie-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: 1px solid var(--accent);
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+    margin-top: auto;
+}
+
+.movie-btn:hover {
+    background-color: var(--accent);
+}
+
+/* Watchlist Mini-Cards styling */
+.watchlist-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    transition: background-color var(--transition-speed);
+}
+
+.watchlist-item:hover {
+    background-color: #252525;
+}
+
+.watchlist-poster {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+}
+
+.watchlist-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.watchlist-title {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.watchlist-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+.remove-btn:hover {
+    color: var(--accent);
+    background-color: rgba(255, 9, 20, 0.1);
+}
+
+/* Responsive Design Collapse */
+@media (max-width: 900px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .watchlist-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px;
+    }
+
+    .watchlist-grid {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 10px;
+        height: auto;
+    }
+
+    .watchlist-item {
+        width: 260px;
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        padding: 25px;
+    }
+}

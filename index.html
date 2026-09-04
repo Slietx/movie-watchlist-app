@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slietx's CineTrack - Movie Search & Watchlist</title>
+    <!-- Connect our cinematic stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar containing your persistent Watchlist -->
+        <aside class="watchlist-sidebar">
+            <div class="sidebar-header">
+                <h2>My Watchlist 🍿</h2>
+                <span id="watchlist-count" class="badge">0</span>
+            </div>
+            <p class="empty-message" id="watchlist-empty">Your watchlist is empty. Search and add some shows!</p>
+            <div class="watchlist-grid" id="watchlist-grid">
+                <!-- Saved watchlist items will be injected here by JS -->
+            </div>
+        </aside>
+
+        <!-- Main Content Area: Search Engine and Dynamic Results Grid -->
+        <main class="main-content">
+            <header class="hero-header">
+                <div class="brand">
+                    <span class="logo-icon">🎬</span>
+                    <h1>CineTrack</h1>
+                </div>
+                <p class="tagline">Explore thousands of shows and build your ultimate watch queue.</p>
+                
+                <!-- Search inputs -->
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search for movies or TV shows (e.g., Arrow, Friends)...">
+                    <button id="search-btn">Search</button>
+                </div>
+            </header>
+
+            <!-- Grid container for matching search results -->
+            <section class="results-section">
+                <h2 id="results-heading">Search Results</h2>
+                <div class="results-grid" id="results-grid">
+                    <!-- Dynamic movie cards will be injected here by JS -->
+                    <div class="initial-state">
+                        <p>Your search results will appear here. Try searching for a show above!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Connect our application brain -->
+    <script src="app.js"></script>
+</body>
+</html>
