@@ -9,29 +9,64 @@ const resultsHeading = document.getElementById('results-heading');
 const watchlistGrid = document.getElementById('watchlist-grid');
 const watchlistCount = document.getElementById('watchlist-count');
 const watchlistEmpty = document.getElementById('watchlist-empty');
+const movieModal = document.getElementById('movie-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const modalDetailsBody = document.getElementById('modal-details-body');
+
+// NEW: Variable to hold our active debounce timer (the elevator door control)
+let searchTimeout;
 
 // Initialize the saved watchlist sidebar on startup
 renderWatchlist();
 
-// 2. Set up event listeners for Search actions
-searchBtn.addEventListener('click', handleSearch);
+// 2. Set up event listeners
+searchBtn.addEventListener('click', () => {
+    // Manual search override on button click
+    handleSearch(searchInput.value.trim());
+});
+
 searchInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
-        handleSearch();
+        clearTimeout(searchTimeout); // Kill any pending timer
+        handleSearch(searchInput.value.trim()); // Execute immediately
     }
 });
 
-// 3. Asynchronous handler to look up shows via the keyless TVMaze API
-async function handleSearch() {
+// NEW EVENT LISTENER: This handles the automated "Search-as-you-Type" flow
+searchInput.addEventListener('input', () => {
+    // Stop the previous countdown immediately because the user is still typing!
+    clearTimeout(searchTimeout);
+
     const query = searchInput.value.trim();
 
+    // If the input is empty, reset the results area back to its welcoming starting state
     if (query === '') {
-        alert('Please enter a search term first!');
+        resetSearchResults();
         return;
     }
 
+    // Start a fresh 500ms countdown. If 500ms passes without a new input event, run handleSearch.
+    searchTimeout = setTimeout(() => {
+        handleSearch(query);
+    }, 500);
+});
+
+// Helper to reset the search results view when the search input is cleared
+function resetSearchResults() {
+    resultsHeading.textContent = 'Search Results';
+    resultsGrid.innerHTML = `
+        <div class="initial-state">
+            <p>Your search results will appear here. Try searching for a show above!</p>
+        </div>
+    `;
+}
+
+// 3. Asynchronous handler to look up shows via the keyless TVMaze API
+async function handleSearch(query) {
+    if (!query || query === '') return;
+
     try {
-        // Display animated loading state in results box
+        // Display loading state
         resultsGrid.innerHTML = `
             <div class="initial-state">
                 <p>Searching movie database for "${query}"... 🍿</p>
@@ -53,12 +88,12 @@ async function handleSearch() {
                 <p style="color: #e50914;">Error: ${error.message}</p>
             </div>
         `;
-    } finally {
-        // Clear input bar
-        searchInput.value = '';
     }
+    // Notice: We removed "searchInput.value = ''" from the finally block! 
+    // This allows users to keep seeing what they typed while looking at their results.
 }
 
+//  PASTE THIS UPDATED BLOCK INSTEAD:
 // 4. Overwrite Search Grid with newly fetched API elements
 function renderSearchResults(results) {
     resultsGrid.innerHTML = '';
@@ -95,11 +130,13 @@ function renderSearchResults(results) {
         card.className = 'movie-card';
 
         card.innerHTML = `
-            <div class="movie-poster-wrapper">
+            <!-- Clickable poster wrapper with added modal hook class -->
+            <div class="movie-poster-wrapper clickable-target">
                 <img src="${posterUrl}" alt="${show.name}" class="movie-poster" loading="lazy">
             </div>
             <div class="movie-info">
-                <h3 class="movie-title" title="${show.name}">${show.name}</h3>
+                <!-- Clickable title with added modal hook class -->
+                <h3 class="movie-title clickable-target" title="${show.name}">${show.name}</h3>
                 <div class="movie-meta">
                     <span class="movie-year">${releaseYear}</span>
                     <span class="movie-rating">${ratingScore}</span>
@@ -118,6 +155,15 @@ function renderSearchResults(results) {
             });
         }
 
+        // NEW MODAL BINDING: Targets both the poster wrapper and title text
+        const clickableElements = card.querySelectorAll('.clickable-target');
+        clickableElements.forEach(element => {
+            element.style.cursor = 'pointer';
+            element.addEventListener('click', () => {
+                openModal(show);
+            });
+        });
+
         resultsGrid.appendChild(card);
     });
 }
@@ -133,7 +179,6 @@ function setButtonToAdded(btn) {
 
 // 5. Append a movie record to local storage state
 function addToWatchlist(show, btn) {
-    // Escape early if item is already added
     if (watchlist.some(item => item.id === show.id)) return;
 
     const posterUrl = show.image 
@@ -178,10 +223,8 @@ function removeFromWatchlist(id) {
         // Re-attach fresh click handler since it was disabled
         searchCardBtn.replaceWith(searchCardBtn.cloneNode(true));
         
-        // Bind dynamic listener again after cloning
         const refreshedBtn = document.querySelector(`.movie-btn[data-id="${id}"]`);
         refreshedBtn.addEventListener('click', () => {
-            // Find current matching show in search output
             const targetQueryItem = {
                 id: id,
                 name: refreshedBtn.closest('.movie-info').querySelector('.movie-title').textContent,
@@ -225,7 +268,6 @@ function renderWatchlist() {
             <button class="remove-btn" title="Remove from Watchlist">&times;</button>
         `;
 
-        // Bind delete action to cross button
         const deleteButton = itemElement.querySelector('.remove-btn');
         deleteButton.addEventListener('click', () => {
             removeFromWatchlist(item.id);
@@ -234,3 +276,68 @@ function renderWatchlist() {
         watchlistGrid.appendChild(itemElement);
     });
 }
+// ==========================================================================
+// DETAILED MODAL EVENT HANDLERS
+// ==========================================================================
+
+// Function to construct the modal body layout dynamically
+function openModal(show) {
+    // A) Fallback checks
+    const posterUrl = show.image 
+        ? show.image.original 
+        : 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=300&auto=format&fit=crop';
+    
+    const releaseYear = show.premiered ? show.premiered.split('-') : 'N/A';
+    const ratingScore = show.rating && show.rating.average ? `⭐ ${show.rating.average}` : '⭐ N/A';
+    
+    // B) Map genres into styled pill tags
+    const genresHTML = show.genres && show.genres.length > 0
+        ? show.genres.map(genre => `<span class="genre-pill">${genre}</span>`).join('')
+        : '<span class="genre-pill">N/A</span>';
+
+    const summaryText = show.summary || '<p>No cinematic plot description available for this show.</p>';
+
+    // C) Populate HTML content
+    modalDetailsBody.innerHTML = `
+        <div class="modal-body-layout">
+            <img src="${posterUrl}" alt="${show.name}" class="modal-poster">
+            <div class="modal-text">
+                <h2 class="modal-title">${show.name}</h2>
+                <div class="modal-info-row">
+                    <span><strong>Year:</strong> ${releaseYear}</span> | 
+                    <span><strong>Rating:</strong> ${ratingScore}</span>
+                </div>
+                <div class="modal-genres">
+                    ${genresHTML}
+                </div>
+                <div class="modal-summary">${summaryText}</div>
+                ${show.officialSite ? `<a href="${show.officialSite}" target="_blank" class="modal-link-btn">Official Website ↗</a>` : ''}
+            </div>
+        </div>
+    `;
+
+    // D) Show the overlay
+    movieModal.classList.add('show');
+}
+
+// Function to close modal
+function closeModal() {
+    movieModal.classList.remove('show');
+}
+
+// Event Listeners for closing actions
+closeModalBtn.addEventListener('click', closeModal);
+
+// Close modal if user clicks on the semi-transparent overlay surrounding the card
+movieModal.addEventListener('click', (event) => {
+    if (event.target === movieModal) {
+        closeModal();
+    }
+});
+
+// Close modal if user presses physical Escape key on keyboard
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && movieModal.classList.contains('show')) {
+        closeModal();
+    }
+});
