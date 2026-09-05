@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineTrack - Discover Releases</title>
+    <!-- We reuse our main stylesheet to keep themes consistent! -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Global Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">🎬 CineTrack</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Search & Watchlist</a></li>
+            <!-- Mark this page as active -->
+            <li><a href="discover.html" class="active">Discover Releases</a></li>
+        </ul>
+    </nav>
+
+    <div class="discover-container">
+        <!-- Section A: Airing Today -->
+        <section class="discover-section">
+            <h2 class="section-title">Latest Releases (Airing Today) 🔴</h2>
+            <div class="results-grid" id="latest-grid">
+                <div class="initial-state"><p>Loading today's latest releases...</p></div>
+            </div>
+        </section>
+
+        <!-- Section B: Airing Tomorrow -->
+        <section class="discover-section">
+            <h2 class="section-title">Upcoming Releases (Airing Tomorrow) 🗓️</h2>
+            <div class="results-grid" id="upcoming-grid">
+                <div class="initial-state"><p>Loading tomorrow's schedule...</p></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Movie Details Modal Overlay (Reused for popups on this page too!) -->
+    <div id="movie-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal-btn">&times;</button>
+            <div id="modal-details-body"></div>
+        </div>
+    </div>
+
+    <!-- Connects to our brand-new script file -->
+    <script src="discover.js"></script>
+</body>
+</html>

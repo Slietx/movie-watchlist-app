@@ -8,6 +8,7 @@
     --text-muted: #aaaaaa;
     --border-color: rgba(255, 255, 255, 0.1);
     --transition-speed: 0.3s;
+    --nav-height: 70px; /* Exact height for the sticky navbar */
 }
 
 * {
@@ -22,15 +23,68 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   NAVIGATION BAR & MULTI-PAGE STYLES
+   ========================================================================== */
+
+/* The Sleek Streaming Navbar */
+.navbar {
+    background-color: #0b0b0b;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 40px;
+    height: var(--nav-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-brand {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: color var(--transition-speed);
+}
+
+.nav-links a:hover {
+    color: #ffffff;
+}
+
+/* Styled active marker */
+.nav-links a.active {
+    color: var(--text-color);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 4px;
 }
 
 /* Double-section App Container */
 .app-container {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - var(--nav-height));
 }
 
-/* Watchlist Sidebar styling */
+/* Watchlist Sidebar styling (Fixed height sticky under navbar) */
 .watchlist-sidebar {
     width: 320px;
     background-color: #0f0f0f;
@@ -39,9 +93,10 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    height: 100vh;
+    height: calc(100vh - var(--nav-height)); /* Take up exact visible height under nav */
     position: sticky;
-    top: 0;
+    top: var(--nav-height); /* Stick exactly under the navbar */
+    overflow-y: auto; /* Scroll internally if watchlist gets long */
 }
 
 .sidebar-header {
@@ -363,40 +418,31 @@ body {
     background-color: rgba(255, 9, 20, 0.1);
 }
 
-/* Responsive Design Collapse */
-@media (max-width: 900px) {
-    .app-container {
-        flex-direction: column;
-    }
-
-    .watchlist-sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-        padding: 20px;
-    }
-
-    .watchlist-grid {
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 10px;
-        height: auto;
-    }
-
-    .watchlist-item {
-        width: 260px;
-        flex-shrink: 0;
-    }
-
-    .main-content {
-        padding: 25px;
-    }
+/* Discover Page Main Content Wrapper */
+.discover-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    width: 100%;
 }
 
-    /* ==========================================================================
+.discover-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
    CINEMATIC DETAILS MODAL STYLES
    ========================================================================== */
 
@@ -413,7 +459,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000; /* Higher than sticky elements */
     opacity: 0; /* Hidden by default */
     pointer-events: none; /* Ignore mouse clicks when invisible */
     transition: opacity 0.3s ease;
@@ -544,8 +590,58 @@ body {
     background-color: var(--accent-hover);
 }
 
-/* Responsive Modal styling for mobile */
+/* Responsive Design Collapse */
+@media (max-width: 900px) {
+    .app-container {
+        flex-direction: column;
+        min-height: calc(100vh - var(--nav-height));
+    }
+
+    .watchlist-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px;
+    }
+
+    .watchlist-grid {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 10px;
+        height: auto;
+    }
+
+    .watchlist-item {
+        width: 260px;
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        padding: 25px;
+    }
+}
+
 @media (max-width: 600px) {
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .nav-brand {
+        font-size: 18px;
+    }
+
+    .nav-links {
+        gap: 15px;
+    }
+
+    .nav-links a {
+        font-size: 13px;
+    }
+
     .modal-body-layout {
         flex-direction: column;
         align-items: center;
